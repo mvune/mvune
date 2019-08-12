@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reed Speed</title>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <style>
+        html, textarea {
+            font-family: 'Inter', sans-serif;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .right-side {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background-color: rebeccapurple;
+        }
+
+        .right-inner {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px;
+            width: 75px;
+        }
+
+        #textarea {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            border: 0;
+            resize: horizontal;
+            padding: 24px;
+        }
+
+        #timer {
+            margin-bottom: 1rem;
+            font-family: monospace, monospace;
+            font-weight: bold;
+        }
+
+        #time {
+            font-size: 2.5rem;
+        }
+
+        #decitime {
+            font-size: 1.5rem;
+            margin-left: -6px;
+            font-weight: normal;
+        }
+
+        .number {
+            font-size: 1.5rem;
+        }
+    </style>
+    <script>
+        class Timer {
+            constructor(el) {
+                this.interval;
+                this.time = new Date(0);
+                this.running = false;
+                this.outputElement = el;
+            }
+
+            start() {
+                this.interval = setInterval(() => {
+                    this.tick();
+                    this.showTime();
+                }, 100);
+                this.running = true;
+            }
+
+            stop() {
+                clearInterval(this.interval);
+                this.running = false;
+            }
+
+            reset() {
+                this.stop();
+                this.time = new Date(0);
+                this.showTime();
+            }
+
+            tick() {
+                this.time.setMilliseconds(this.time.getMilliseconds() + 100);
+            }
+
+            showTime() {
+                const t = this.time.toLocaleTimeString();
+                this.outputElement.children.time.textContent = t.substr(t.indexOf(':') + 1);
+                this.outputElement.children.decitime.textContent = '.' + (this.time.getMilliseconds() / 100);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-side">
+            <textarea name="textarea" id="textarea" cols="50" rows="30" autofocus="true" spellcheck="false" placeholder="Place text here!"></textarea>
+        </div>
+
+        <div class="right-side">
+            <div class="right-inner">
+                <div id="timer">
+                    <span id="time">00:00</span>
+                    <span id="decitime">.0</span>
+                </div>
+
+                <div class="buttons-container">
+                    <button type="button" class="button" id="start">Start</button>
+                    <button type="button" class="button" id="reset">Reset</button>
+                </div>
+
+                <h3>Words/min</h3>
+                <span class="number" id="wpm">-</span>
+                <h3>Total words</h3>
+                <span class="number" id="words">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            let startBtn = document.getElementById('start');
+            let resetBtn = document.getElementById('reset');
+            let textarea = document.getElementById('textarea');
+            let wcOutputElement = document.getElementById('words');
+            let wpmOutputElement = document.getElementById('wpm');
+            let timeOutputElement = document.getElementById('timer');
+            let timer = new Timer(timeOutputElement);
+
+            startBtn.addEventListener('click', () => timer.running ? stop() : start());
+            resetBtn.addEventListener('click', () => reset());
+            textarea.addEventListener('input', showWordCount);
+            showWordCount();
+
+            function start() {
+                timer.start();
+                startBtn.textContent = 'Stop';
+                wpmOutputElement.textContent = '-';
+            }
+
+            function stop() {
+                timer.stop();
+                startBtn.textContent = 'Start';
+                const minutes = timer.time.getTime() / 1000 / 60;
+                wpmOutputElement.textContent = minutes ? Math.round(countWords() / minutes) : 0;
+            }
+
+            function reset() {
+                timer.reset();
+                wpmOutputElement.textContent = 0;
+            }
+
+            function showWordCount() {
+                wcOutputElement.textContent = countWords();
+            }
+
+            function countWords() {
+                const text = textarea.value.trim();
+                return text ? text.split(/\s+/).length : 0;
+            }
+        })();
+    </script>
+</body>
+</html>

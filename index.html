@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mvune.nl</title>
+    <style>
+        #text {
+            margin-top: 250px;
+            text-align: center;
+        }
+        #hand {
+            display: inline-block;
+            transform-origin: 18px 36px;
+            animation: wave .15s ease-in-out alternate infinite;
+        }
+        @keyframes wave {
+            from { transform:rotate(-12deg); }
+            to { transform:rotate(12deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="text">Hoi! <span id="hand">🖐️</span></h1>
+</body>
+</html>
